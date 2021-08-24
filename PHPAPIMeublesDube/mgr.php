@@ -1,11 +1,9 @@
 <?php
 /*****************************************************************************/
-//	Auteur:				Yvon Gosselin
-//	Description:		Définition du manager des jeux vidéos et des méthodes
+//	Auteur:				Jérémie Cyr
+//	Description:		Définition du manager et des méthodes
 //                      d'accès à la BD
-//	Date de creation:	Avril 2020
-//	But:				Manipulation des Jeux Vidéos par la programmation objet (POO)
-// 	Modification : 		Jérémie Cyr
+//	Date de creation:	Août 2021
 /*****************************************************************************/
 
 /**
