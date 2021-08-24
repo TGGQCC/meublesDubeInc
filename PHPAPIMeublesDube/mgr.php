@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************/
-//	Auteur:				Jérémie Cyr
+//	Auteur:				Jérémie Cyr et Joséanne Aubut
 //	Description:		Définition du manager et des méthodes
 //                      d'accès à la BD
 //	Date de creation:	Août 2021

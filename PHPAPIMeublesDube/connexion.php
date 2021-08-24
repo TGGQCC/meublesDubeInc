@@ -1,8 +1,8 @@
 <?php
 /*****************************************************************************/
-//	Auteur:			Jérémie Cyr
+//	Auteur:			Jérémie Cyr et Joséanne Aubut
 //	Description:		Connexion à la base de données 
-//	Date de creation:	Août 2020
+//	Date de creation:	Août 2021
 //	But:			Connecter l'application à la base de données
 /*****************************************************************************/
 try
