@@ -6,7 +6,7 @@
 //	But:			Exécuter des requêtes à la BD
 /*****************************************************************************/
 include('connexion.php');
-include('test.php');
+include('mgr.php');
 
  
     $mgr = new mgr($db);
@@ -16,5 +16,9 @@ include('test.php');
         $mgr->getToutEssenceBois();
         }
 
+    if(isset($_GET['getEssenceBois'])) {
+        $boisId = $_GET['id'];
+        $mgr->getEssenceBois($boisId);
+        }
         
 ?>

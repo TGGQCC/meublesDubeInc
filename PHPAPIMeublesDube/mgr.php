@@ -7,14 +7,14 @@
 /*****************************************************************************/
 
 /**
- * classe qui gère les jeux vidéos
+ * classe qui gère les essences de bois
  */
 class mgr      // Définition de la classe
 {
     private $db;            // Instance de PDO
 
     /**
-     * constructeur de la classe mgrJeuVideo
+     * constructeur de la classe mgr
      *
      * @param [PDO] $db
      */
@@ -37,18 +37,17 @@ class mgr      // Définition de la classe
 /**
      * Fonction qui va chercher toute la liste des essences de bois dans la BD
      *
-     * @param jeuVideo $jeuVideo
      * @return void
      */
     function getToutEssenceBois()
     {
         try
         {
-            $requeteGetJeuVideo = $this->db->prepare('SELECT * FROM bois');
-            $reponse = $requeteGetJeuVideo->execute();
-            $tableauJeuVideo = $requeteGetJeuVideo->fetch(PDO::FETCH_ASSOC); //retourne un tableau indexé par le nom de la colonne
-            var_dump($tableauJeuVideo);
-            return $tableauJeuVideo;
+            $requeteGetToutEssenceBois = $this->db->prepare('SELECT * FROM bois');
+            $reponse = $requeteGetToutEssenceBois->execute();
+            $tableauToutEssenceBois = $requeteGetToutEssenceBois->fetch(PDO::FETCH_ASSOC); //retourne un tableau indexé par le nom de la colonne
+            var_dump($tableauToutEssenceBois);
+            return $tableauToutEssenceBois;
         }
         catch (Exception $e)
         {
@@ -60,17 +59,17 @@ class mgr      // Définition de la classe
 /**
      * Fonction qui va chercher les infos sur une essence de bois spécifiée
      *
-     * @param jeuVideo $jeuVideo
      * @return void
      */
-    function getEssenceBois()
+    function getEssenceBois($id)
     {
         try
         {
-            $requeteGetToutEssenceBois = $this->db->prepare('SELECT * FROM bois');
-            $tableToutEssenceBois = $requeteGetToutEssenceBois->execute();
-            var_dump($tableToutEssenceBois);
-            return $tableToutEssenceBois;
+            $requeteGetEssenceBois = $this->db->prepare('SELECT * FROM bois WHERE id='.$id.'');
+            $reponse = $requeteGetEssenceBois->execute();
+            $tableauEssenceBois = $requeteGetEssenceBois->fetch(PDO::FETCH_ASSOC); //retourne un tableau indexé par le nom de la colonne
+            var_dump($tableauEssenceBois);
+            return $tableauEssenceBois;
         }
         catch (Exception $e)
         {
