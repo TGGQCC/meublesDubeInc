@@ -2,10 +2,10 @@ const db = require('./db');
 const helper = require('../helper');
 const config = require('../config');
 
-async function getMultiple(page = 1){
+async function getAllWoods(page = 1){
   const offset = helper.getOffset(page, config.listPerPage);
   const rows = await db.query(
-    `SELECT * FROM bois LIMIT ?,?`, 
+    `SELECT id, nom FROM bois LIMIT ?,?`, 
     [offset, config.listPerPage]
   );
   const data = helper.emptyOrRows(rows);
@@ -17,6 +17,22 @@ async function getMultiple(page = 1){
   }
 }
 
+async function getCaracterisiticsOf(id, page = 1){
+  const offset = helper.getOffset(page, config.listPerPage);
+  const rows = await db.query(
+    `SELECT * FROM bois where id = ? LIMIT ?,?`, 
+    [id, offset, config.listPerPage]
+  );
+  const data = helper.emptyOrRows(rows);
+  const meta = {page};
+
+  return {
+    data,
+    meta
+  }
+}
+
 module.exports = {
-  getMultiple
+  getAllWoods,
+  getCaracterisiticsOf
 }
