@@ -32,7 +32,6 @@ app.use((err, req, res, next) => {
   console.error(err.message, err.stack);
   res.status(statusCode).json({'message': err.message});
 
-
   return;
 });
 
@@ -81,7 +80,7 @@ const html  = '<!DOCTYPE html>'+
                                 '<span style="text-decoration:underline">Format JSON</span>'+
                                 '<p style="margin-left:75px">Suite à l\'appel Get, l\'API renvoit la réponse en JSON contenant les id et les noms des bois. Voici à quoi la réponse ressemble pour cette requête :</p>'+
                                 '<div>'+
-                                  '{"data":[{"id":1,"nom":"Érable"},{"id":2,"nom":"Acajou"},{"id":3,"nom":"Épinette"}],"meta":{"page":1}}'+
+                                  '{{"id":1,"nom":"Érable"},{"id":2,"nom":"Acajou"},{"id":3,"nom":"Épinette"}}'+
                                 '</div>'+
                                 '</li>'+
                             '</ul>'+
@@ -101,7 +100,27 @@ const html  = '<!DOCTYPE html>'+
                                 '<span style="text-decoration:underline">Format JSON</span>'+
                                 '<p style="margin-left:75px">Suite à l\'appel Get, l\'API renvoit la réponse en JSON contenant toutes les informations du bois. Voici à quoi la réponse ressemble pour cette requête :</p>'+
                                 '<div>'+
-                                    '{"data": [{"id": 1,"type": "Dur","origine": "US","sechage": 20,"temp_min": 25,"nom": "Érable"}],"meta": {"page": 1}}'+
+                                    '{{"id": 1,"type": "Dur","origine": "US","sechage": 20,"temp_min": 25,"nom": "Érable"}}'+
+                                '</div>'+
+                                '</li>'+
+                              '</ul>'+              
+                            '</div>'+
+                        '</div>'+
+                        '<p>'+
+                          '<button style="background-color:green; border:green; width:200px" class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidth3" aria-expanded="false" aria-controls="collapseWidthExample">getCaracteristics</button>'+
+                        '</p>'+
+                        '<div style="margin-bottom: 15px;" class="collapse collapse-horizontal" id="collapseWidth3">'+
+                          '<div class="card card-body" style="width: 100%; color: green;">'+
+                            '<ul>'+
+                                '<li><strong>Requête : </strong>'+
+                                  '<span style="text-decoration:underline">http://localhost:3000/api/getCaracterisitics/Érable</span>'+
+                                  '<p style="margin-left:75px">Il faut préciser l\'adresse IP qui est celle du serveur hébergeant l\'API, dans notre cas, localhost, et ensuite, préciser le chemin vers l\'API qui répond à l\'appel GET. À la fin, préciser le nom de la fonction ainsi que le nom du bois dont vous voulez les caractéristiques et le résultat sera renvoyer en JSON</p>'+
+                                '</li><br>'+
+                                '<li><strong>Réponse : </strong>'+
+                                '<span style="text-decoration:underline">Format JSON</span>'+
+                                '<p style="margin-left:75px">Suite à l\'appel Get, l\'API renvoit la réponse en JSON contenant toutes les informations du bois. Voici à quoi la réponse ressemble pour cette requête :</p>'+
+                                '<div>'+
+                                    '{{"id": 1,"type": "Dur","origine": "US","sechage": 20,"temp_min": 25,"nom": "Érable"}}'+
                                 '</div>'+
                                 '</li>'+
                               '</ul>'+              

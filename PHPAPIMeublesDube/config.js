@@ -6,8 +6,7 @@ const config = {
     user: env.DB_USER || 'meublesdubeinc',
     password: env.DB_PASSWORD || 'Patate123.',
     database: env.DB_NAME || 'meublesdubeinc',
-  },
-  listPerPage: env.LIST_PER_PAGE || 10,
+  }
 };
 
 

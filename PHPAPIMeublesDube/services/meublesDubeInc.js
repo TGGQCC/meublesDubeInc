@@ -1,38 +1,28 @@
 const db = require('./db');
-const helper = require('../helper');
 const config = require('../config');
 
-async function getAllWoods(page = 1){
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await db.query(
-    `SELECT id, nom FROM bois LIMIT ?,?`, 
-    [offset, config.listPerPage]
+async function getAllWoods(){
+  return await db.query(
+    `SELECT id, nom FROM bois`
   );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
-
-  return {
-    data,
-    meta
-  }
 }
 
-async function getCaracterisiticsOf(id, page = 1){
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await db.query(
-    `SELECT * FROM bois where id = ? LIMIT ?,?`, 
-    [id, offset, config.listPerPage]
+async function getCaracterisiticsOf(id){
+  return await db.query(
+    `SELECT * FROM bois where id = ?`, 
+    [id]
   );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
+}
 
-  return {
-    data,
-    meta
-  }
+async function getCaracterisitics(nom){
+  return await db.query(
+    `SELECT * FROM bois where nom = ?`, 
+    [nom]
+  );
 }
 
 module.exports = {
   getAllWoods,
-  getCaracterisiticsOf
+  getCaracterisiticsOf,
+  getCaracterisitics
 }
