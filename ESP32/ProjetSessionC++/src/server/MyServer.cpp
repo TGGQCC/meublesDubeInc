@@ -31,6 +31,34 @@ void MyServer::initAllRoutes() {
         request->send(SPIFFS, "/index.html", "text/html");
         });
 
+    //Route de la page du four
+    this->on("/login", HTTP_POST, [](AsyncWebServerRequest *request) {
+            Serial.println("login... ");
+            String response;
+            HTTPClient http;
+            String user;
+            String password;
+
+           if(request->hasParam("user", true) && request->hasParam("password", true))
+            {
+                String woodApiRestAddress = "http://172.16.200.254:3000/api/login";
+                http.begin(woodApiRestAddress);
+                String response = http.getString();
+                user = request->getParam("user", true)->value();
+                password = request->getParam("password", true)->value();
+                String json = "{\"user\":\""+ user + "\",\"password\":\""+ password +"\"}";                
+                http.addHeader("Accept", "application/json");
+                http.addHeader("Content-Type", "application/json");
+                http.POST(json);
+                response = http.getString();
+                request->send(200, "text/plain", response);
+            }else
+            {
+                 response = "Aucun bois sélectionné";
+            }
+
+            request->send(200, "text/plain");
+        });
 
     //Route de l'image
     this->on("/sac.PNG", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -87,6 +115,10 @@ void MyServer::initAllRoutes() {
 
         });
 
+        this->on("/postStopFour", HTTP_POST, [](AsyncWebServerRequest *request) {
+            Serial.println("Stopper le four... ");
+
+        });
 
         this->on("/getTemperature", HTTP_GET, [](AsyncWebServerRequest *request) {
             Serial.println("getTemperature... ");

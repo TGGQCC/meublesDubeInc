@@ -76,9 +76,18 @@ using namespace std;
 #include "oled/MyOled.h"
 #include "oled/MyOledViewInitialisation.h"
 #include "oled/MyOledViewWifiAp.h"
+#include "oled/MyOledViewWorking.h"
+#include "oled/MyOledViewWorkingOFF.h"
+#include "oled/MyOledViewErrorWifiConnexion.h"
+
+
 MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
 MyOledViewInitialisation *myOledViewInitialisation = NULL;
 MyOledViewWifiAp *myOledViewWifiAp = NULL;
+MyOledViewWorking *myOledViewWorking = NULL;
+MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
+MyOledViewErrorWifiConnexion *myOledViewErrorWifiConnexion = NULL;
+
 
 //Pour avoir les données du senseur de température
 #include "temperature/TemperatureStub.h"
@@ -90,9 +99,9 @@ TemperatureStub *temperatureStub = NULL;
 //Pour la gestion du serveur WEB
 #include <HTTPClient.h>
 #include <WiFiManager.h>
+string ip;
 WiFiManager wm;
 #define WEBSERVER_H
-
 
 //Pour la gestion du serveur ESP32
 #include "server/MyServer.h"
@@ -101,7 +110,7 @@ MyServer *myServer = NULL;
 
 //Variable pour la connection Wifi
 const char *SSID = "JCESP";
-const char *PASSWORD = "";
+const char *PASSWORD = "JCESP";
 String ssIDRandom;
 
 //Boutons
@@ -208,35 +217,69 @@ void setup() {
         Serial.println(strToPrint);
 
 
+         myOledViewWifiAp = new MyOledViewWifiAp;
+         myOledViewWifiAp->setNomDuSysteme("SAC System");
+         myOledViewWifiAp->setParams("IdSysteme", "SAC_911");
+         myOledViewWifiAp->setSsIDDuSysteme(ssIDRandom.c_str());
+         myOledViewWifiAp->setPassDuSysteme(PASSRandom.c_str());
+         myOled->displayView(myOledViewWifiAp);
+
+
     if (!wm.autoConnect(ssIDRandom.c_str(), PASSRandom.c_str())){
             Serial.println("Erreur de connexion.");
-        
+            myOledViewErrorWifiConnexion = new MyOledViewErrorWifiConnexion;
+            myOledViewErrorWifiConnexion->setNomDuSysteme("SAC System");
+            myOled->displayView(myOledViewErrorWifiConnexion);
+
             }
         else {
-            Serial.println("Connexion Établie.");
-                //Démarrage de la vue de WifiAp
-                myOledViewWifiAp = new MyOledViewWifiAp;
-                myOledViewWifiAp->setNomDuSysteme("SAC System");
-                myOledViewWifiAp->setParams("IdSysteme", "SAC_911");
-                myOledViewWifiAp->setSsIDDuSysteme(ssIDRandom.c_str());
-                myOledViewWifiAp->setPassDuSysteme(PASSRandom.c_str());
-                myOled->displayView(myOledViewWifiAp);
+                Serial.println("Connexion Établie.");      
+                    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
+                    digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, HIGH);
+                    digitalWrite(GPIO_PIN_LED_OK_GREEN, HIGH);
+                    delay(500);
+                    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+                    digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+                    digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
+                    delay(500);
+                    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
+                    digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, HIGH);
+                    digitalWrite(GPIO_PIN_LED_OK_GREEN, HIGH);
+                    delay(500);
+                    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+                    digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+                    digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
+
             }
+
+            ip = WiFi.localIP().toString().c_str();
 
         // ----------- Routes du serveur ----------------
         myServer = new MyServer(80);
         myServer->initAllRoutes();
         myServer->initCallback(&CallBackMessageListener);
+        
+        myOledViewWorkingOFF = new MyOledViewWorkingOFF;
 
 
   } //setup
 
 
 void loop() {
-
+        myOled->veilleCheck(false);
+        
         int buttonAction = myButtonAction->checkMyButton();
         temperature = temperatureStub->getTemperature(); //Obtenir la température ambiante
+        
+        stringstream streamTemperature;
+        streamTemperature << temperature;
+        string temperatureString;
+        streamTemperature >> temperatureString;
 
-
+        myOledViewWorkingOFF->setParams("NomSysteme","SAC System");
+        myOledViewWorkingOFF->setParams("IdSysteme", "SAC_911");
+        myOledViewWorkingOFF->setParams("Temperature", temperatureString);
+        myOledViewWorkingOFF->setParams("Ip", ip);
+        myOled->displayView(myOledViewWorkingOFF);
 
     } //loop

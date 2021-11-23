@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script.js"></script>
+    <title>SAC</title>
+</head>
+
+<body onload="getFromESP_getAllWoodOptions(); getFromESP_getCaracterisiticsOf(1);">
+    <div style="display: flex;">
+        <div style="width: 40%;">
+            <img src="sac.PNG" style="width: 60%; height: auto;"><br>
+            <div style="margin-bottom: 8px; margin-top: 11px;">
+                <label style="font-weight: bold; font-size: 24px;">Type de bois</label><br>
+            </div>
+            <select onchange="getFromESP_getCaracterisiticsOf(this.value)" id="selectBois" style="margin-left: 18px; width: 84%; height: 40px; border: 4px solid black;  font-size: 18px; background-image: linear-gradient(white, rgb(96, 156, 96));">
+
+            </select><br>
+            <div style="margin-bottom: 8px; margin-top: 12px;">
+                <label style="font-weight: bold; font-size: 24px;">Caractéristiques</label>
+            </div>
+            <div style="border: 4px solid black; margin-left: 18px; width: 88%; height: 130px; font-size: 14px;">
+                <label style="display: inline-block; margin-bottom: 3px; margin-top: 8px; width: 135px;">Bois</label><label><span style="display: inline-block;" id="nom"> </span></label><br>
+                <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Type</label><label><span style="display: inline-block;" id="type"> </span></label><br>
+                <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Origine</label><label><span style="display: inline-block;" id="origine"> </span></label><br>
+                <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Temps de séchage</label><label><span style="display: inline-block;;" id="sechage"> </span></label><br>
+                <label style="display: inline-block; margin-bottom: 8px; width: 135px;">Température min</label><label><span style="display: inline-block;" id="temp_min"> </span></label>
+            </div>
+        </div>
+        
+        <div style="width: 57%; height: 100px; margin-top: 3%;">
+            <label style="font-weight: bold; font-size: 24px;">Contrôle du four de séchage</label>
+            <div style=" width: 100%; margin-left: 5%;">
+                <div style=" height :328px; border: 4px solid black; display: flex; flex-direction: column; align-items: center;">
+                    <div>
+                        <p style="font-weight: bold; margin-bottom: 20px; font-size: 18px;"><span>Température du four</span></p>
+                    </div>
+                    <div>
+                        <p id="temperatureActuelle" style="color: blue; font-weight: bold; font-size: 20px; margin-bottom: 90px;">NA Celsius</p>
+                    </div>
+                    <div>
+                        <button onclick="postToESP_demarrerFour()" id="btnDemarrerFour" style="background-color: cornflowerblue; border-radius: 30px; border: none; width: 280px; height: 45px; font-weight: bolder; font-size: 26px; margin-bottom: 35px;">Démarrage du four</button>
+                        <button onclick="postToESP_stopFour()" id="btnStopFour" style="background-color: red; border-radius: 30px; border: none; width: 280px; height: 45px; font-weight: bolder; font-size: 26px; margin-bottom: 35px; display: none;">Stopper le four</button>
+                    </div>
+                    <div style="display: flex; flex-direction: row; align-self: flex-start; color: blue; font-size: 18px;">
+                        <div style="margin-right: 43px; margin-left: 25px;">
+                            <p style="font-size: 15px;" id="boisFour"></p>
+                        </div>
+                        <div style="margin-right: 20px; ">
+                            <p style="font-size: 15px;">0s</p>
+                        </div>
+                        <div style="margin-right: 20px;">
+                            <p style="font-size: 15px;" id="sechageFour"></p>
+                        </div>
+                        <div style="margin-right: 20px;">
+                            <p style="font-size: 15px;" id="temp_minFour"></p>
+                        </div>
+                            <div style="margin-right: 4px; width:6px; height:6px; border-radius:50px; background: red; border: 1px solid black; margin-top: 21px;"></div>
+
+                            <div style="margin-right: 4px; width:6px; height:6px; border-radius:50px; background: yellow; border: 1px solid black; margin-top: 21px;"></div>
+                        
+                            <div style="width:6px; height:6px; border-radius:50px; background: green; border: 1px solid black; margin-top: 21px;"></div>                     
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+</div>
+</body>
+
+</html>

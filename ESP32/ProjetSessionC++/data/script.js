@@ -53,11 +53,23 @@ function getFromESP_getCaracterisiticsOf(id) {
 }
 
 
-function postToESP_demarrerFour(){
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "postDemarrerFour", true);
-    xhttp.send();
-    }
+    function postToESP_demarrerFour(){
+        document.getElementById("btnDemarrerFour").style.display = "none";
+        document.getElementById("btnStopFour").style.display = "block";
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "postDemarrerFour", true);
+        xhttp.send();
+        }
+
+    function postToESP_stopFour(){
+        document.getElementById("btnDemarrerFour").style.display = "block";
+        document.getElementById("btnStopFour").style.display = "none";
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "postStopFour", true);
+        xhttp.send();
+        }
 
 
     

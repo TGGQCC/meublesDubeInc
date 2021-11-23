@@ -127,10 +127,31 @@ const html  = '<!DOCTYPE html>'+
                             '</div>'+
                         '</div>'+
                         '</div>'+
-                        '<div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab"><P style="color: purple">Il n\'y a aucun appel POST disponible pour le moment</p></div>'+
+                        '<div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">'+
+                        '<p>'+
+                          '<button style="background-color:purple; border:purple; width:200px" class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidth4" aria-expanded="false" aria-controls="collapseWidthExample">login</button>'+
+                        '</p>'+
+                        '<div style="margin-bottom: 15px;" class="collapse collapse-horizontal" id="collapseWidth4">'+
+                          '<div class="card card-body" style="width: 100%; color: purple;">'+
+                            '<ul>'+
+                                '<li><strong>Requête : </strong>'+
+                                  '<span style="text-decoration:underline">http://localhost:3000/api/login</span>'+
+                                  '<p style="margin-left:75px">Il faut préciser l\'adresse IP qui est celle du serveur hébergeant l\'API, dans notre cas, localhost, et ensuite, préciser le chemin vers l\'API qui répond à l\'appel POST. Dans le corps de la requête, le nom d\'usager et le mot de passe doivent être envoyés en JSON (EX: {"user":"patate","password":"123"}) et le token sera renvoyé en JSON.</p>'+
+                                '</li><br>'+
+                                '<li><strong>Réponse : </strong>'+
+                                '<span style="text-decoration:underline">Format JSON</span>'+
+                                '<p style="margin-left:75px">Suite à l\'appel POST, l\'API renvoit la réponse en JSON du token. Voici à quoi la réponse ressemble pour cette requête :</p>'+
+                                '<div>'+
+                                    '{"token": "eyJhbGciOiJIUzI1NiIsInR5sas6IkpXVCJ9.easpYXQiOjE2Mzc2MTE3MjR9.OiR1CNzLoXpToassdYGOKyGtveYDt5FGj6JfdssvJfc"}'+
+                                '</div>'+
+                                '</li>'+
+                              '</ul>'+              
+                            '</div>'+
+                        '</div>'+
+                        '</div>'+
                         '<div class="tab-pane fade" id="apropos" role="tabpanel" aria-labelledby="apropos-tab">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, asperiores provident ea eaque quis omnis adipisci in exercitationem necessitatibus dolorem.</div>'+
                       '</div>'+
                     '</div>'+
                   '</div>'+
                 '</body>'+
-                '</html>'
+                '</html>';

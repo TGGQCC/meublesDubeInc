@@ -1,5 +1,5 @@
 /**
-    Initialisation d'un écran Oled Utilisant un GPIO d'un contrôleur
+    Vue du Oled quand le WiFi se connecte
     @file MyOledViewInitialisation.cpp
     @author  Jérémie Cyr
     @version 1.0 21/11/01
