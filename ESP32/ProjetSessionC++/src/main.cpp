@@ -56,35 +56,42 @@ Classes du système
             GPIO33 : T9                   
  * */
 
+using namespace std;
 
 #include <iostream>
 #include <sstream>    // header file for stringstream
 #include <string>
 #include <Arduino.h>
 #include <ArduinoJson.h>
-
-using namespace std;
-
+#include <chrono>
 #include "myFunctions.cpp" //fonctions utilitaires
-
 #include <wire.h>
+//Vues
+#include "oled/MyOled.h"    
+#include "oled/MyOledViewInitialisation.h"  
+#include "oled/MyOledViewWifiAp.h"
+#include "oled/MyOledViewWorking.h"
+#include "oled/MyOledViewWorkingCOLD.h"
+#include "oled/MyOledViewWorkingHEAT.h"
+#include "oled/MyOledViewWorkingOFF.h"
+#include "oled/MyOledViewErrorWifiConnexion.h"
+
 #define SCREEN_WIDTH 128        // OLED display width, in pixels
 #define SCREEN_HEIGHT 64        // OLED display height, in pixels
 #define OLED_RESET 4            // Reset pin # (or -1 if sharing Arduino reset pin)
 #define OLED_I2C_ADDRESS 0x3C   // Adresse I2C de l'écran Oled
+//Définition des trois leds de statut
+#define GPIO_PIN_LED_LOCK_ROUGE         12 //GPIO12
+#define GPIO_PIN_LED_OK_GREEN             27 //GPIO27
+#define GPIO_PIN_LED_HEAT_YELLOW        14 //GPIO14
 
-#include "oled/MyOled.h"
-#include "oled/MyOledViewInitialisation.h"
-#include "oled/MyOledViewWifiAp.h"
-#include "oled/MyOledViewWorking.h"
-#include "oled/MyOledViewWorkingOFF.h"
-#include "oled/MyOledViewErrorWifiConnexion.h"
-
-
+//Vues
 MyOled *myOled = new MyOled(&Wire, OLED_RESET, SCREEN_HEIGHT, SCREEN_WIDTH);
 MyOledViewInitialisation *myOledViewInitialisation = NULL;
 MyOledViewWifiAp *myOledViewWifiAp = NULL;
 MyOledViewWorking *myOledViewWorking = NULL;
+MyOledViewWorkingCOLD *myOledViewWorkingCOLD = NULL;
+MyOledViewWorkingHEAT *myOledViewWorkingHEAT = NULL;
 MyOledViewWorkingOFF *myOledViewWorkingOFF = NULL;
 MyOledViewErrorWifiConnexion *myOledViewErrorWifiConnexion = NULL;
 
@@ -120,7 +127,10 @@ MyButton *myButtonReset = NULL;
 
 //Variable de température
 float temperature = NULL; 
-
+bool sechage = false;
+string temperatureSechage;
+string tempsSechage;
+int compteurSechage = 0;
 
 //fonction statique qui permet aux objets d'envoyer des messages (callBack) 
 //  arg0 : Action 
@@ -130,6 +140,7 @@ std::string CallBackMessageListener(string message) {
     //Décortiquer le message
     string actionToDo = getValue(message, ' ', 0);
     string arg1 = getValue(message, ' ', 1);
+    string arg2 = getValue(message, ' ', 2);
 
     stringstream stream;
     stream << temperature;
@@ -137,16 +148,25 @@ std::string CallBackMessageListener(string message) {
     stream >> strTemperature;
 
     if (string(actionToDo.c_str()).compare(string("askTemperature")) == 0) {  return(strTemperature.c_str()); }
-
+    
+    if (string(actionToDo.c_str()).compare(string("demarrerFour")) == 0) { 
+        sechage = true;         
+        tempsSechage = arg1;
+        temperatureSechage = arg2;
+        Serial.println(tempsSechage.c_str());
+        Serial.println(temperatureSechage.c_str());
+        }
         
-        return "";
-    }
+    if (string(actionToDo.c_str()).compare(string("stopFour")) == 0) { sechage = false; compteurSechage = 0;}
+
+    return "";
+}
 
 
-//Définition des trois leds de statut
-#define GPIO_PIN_LED_LOCK_ROUGE         12 //GPIO12
-#define GPIO_PIN_LED_OK_GREEN             27 //GPIO27
-#define GPIO_PIN_LED_HEAT_YELLOW        14 //GPIO14
+
+
+
+
 
 
 void setup() { 
@@ -155,9 +175,8 @@ void setup() {
     delay(100);
 
     myOledViewInitialisation = new MyOledViewInitialisation;
-
     myOled->init(OLED_I2C_ADDRESS);
-    myOled->veilleDelay(30); //En secondes
+    myOled->veilleDelay(60); //En secondes
     myOledViewInitialisation->setNomDuSysteme("SAC System");
     myOledViewInitialisation->setIdDuSysteme("SAC_911");
     myOled->displayView(myOledViewInitialisation);
@@ -166,7 +185,7 @@ void setup() {
     myButtonAction = new MyButton();        //Pour lire le bouton actions
     myButtonReset = new MyButton();        //Pour lire le bouton reset
     myButtonAction->init(T8);
-    myButtonAction->init(T9);
+    myButtonReset->init(T9);
     int sensibilisationButtonAction = myButtonAction->autoSensibilisation();
     int sensibilisationButtonReset = myButtonReset->autoSensibilisation();
     Serial.print("sensibilisationButtonAction : "); Serial.println(sensibilisationButtonAction);
@@ -178,17 +197,12 @@ void setup() {
     streamSensibilite >> sensibilite;
 
     myOledViewInitialisation->setSensibiliteBoutonAction(sensibilite);
-    
     streamSensibilite << sensibilisationButtonReset;
     streamSensibilite >> sensibilite;
     myOledViewInitialisation->setSensibiliteBoutonReset(sensibilite);
-
     myOled->updateCurrentView(myOledViewInitialisation);
 
 
-
-
-    
 
     //Initiation pour la lecture de la température
     temperatureStub = new TemperatureStub;
@@ -212,7 +226,7 @@ void setup() {
         PASSRandom = PASSRandom + stringRandom;
         
     //Print les identifiants
-    char strToPrint[128];
+        char strToPrint[128];
         sprintf(strToPrint, "Identification : %s   MotDePasse: %s", ssIDRandom, PASSRandom);
         Serial.println(strToPrint);
 
@@ -259,6 +273,10 @@ void setup() {
         myServer->initAllRoutes();
         myServer->initCallback(&CallBackMessageListener);
         
+        //Initialisation des vues COLD, HEAT et OFF
+        myOledViewWorkingCOLD = new MyOledViewWorkingCOLD;
+        myOledViewWorkingCOLD->init("SAC_911");
+        myOledViewWorkingHEAT = new MyOledViewWorkingHEAT;
         myOledViewWorkingOFF = new MyOledViewWorkingOFF;
 
 
@@ -266,20 +284,90 @@ void setup() {
 
 
 void loop() {
-        myOled->veilleCheck(false);
+        myOled->veilleCheck(false); //Active la mise en veille
         
-        int buttonAction = myButtonAction->checkMyButton();
+        int buttonAction = myButtonAction->checkMyButton(); //Bouton qui sors de la veille
+        int buttonReset = myButtonReset->checkMyButton(); //Bouton qui redémarre l'ESP
         temperature = temperatureStub->getTemperature(); //Obtenir la température ambiante
         
+        //Tradruit la temperature en string
         stringstream streamTemperature;
         streamTemperature << temperature;
         string temperatureString;
         streamTemperature >> temperatureString;
 
-        myOledViewWorkingOFF->setParams("NomSysteme","SAC System");
-        myOledViewWorkingOFF->setParams("IdSysteme", "SAC_911");
-        myOledViewWorkingOFF->setParams("Temperature", temperatureString);
-        myOledViewWorkingOFF->setParams("Ip", ip);
-        myOled->displayView(myOledViewWorkingOFF);
+        //Calcul de +ou- 10% de la température minimale de séchage
+        float temperatureSechageFloat = std::atof(temperatureSechage.c_str());
+        float tempsSechageFloat = std::atof(tempsSechage.c_str());
+        float temperatureSechageMin = temperatureSechageFloat - (0.10 * temperatureSechageFloat);
+        float temperatureSechageMax = temperatureSechageFloat + (0.10 * temperatureSechageFloat);
 
+
+        //Sortir de veille
+        if(buttonAction > 2){
+            Serial.println("Sortie de veille...");
+            myOled->veilleExit();
+        }
+
+        //Redémarrer le système
+        if(buttonReset > 2){
+            Serial.println("Restarting...");
+            ESP.restart();
+        }
+
+        //Logique du four et de l'affichage des vues et des leds
+        if(sechage)
+        {
+            if(temperature < temperatureSechageMin){
+                myOledViewWorkingCOLD->setParams("NomSysteme","SAC System");
+                myOledViewWorkingCOLD->setParams("IdSysteme", "SAC_911");
+                myOledViewWorkingCOLD->setParams("Temperature", temperatureString);
+                myOledViewWorkingCOLD->setParams("Ip", ip);
+                myOled->displayView(myOledViewWorkingCOLD);
+                digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
+                digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+                digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
+            }
+            while(temperature >= temperatureSechageMin && temperature <= temperatureSechageMax && compteurSechage <= tempsSechageFloat && sechage){
+                    myOledViewWorkingHEAT->setParams("NomSysteme","SAC System");
+                    myOledViewWorkingHEAT->setParams("IdSysteme", "SAC_911");
+                    myOledViewWorkingHEAT->setParams("Temperature", temperatureString);
+                    myOledViewWorkingHEAT->setParams("Ip", ip);
+                    myOled->displayView(myOledViewWorkingHEAT);
+                    digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+                    digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, HIGH);
+                    digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
+                    compteurSechage = compteurSechage + 1;
+                    Serial.println(compteurSechage);
+                    Serial.println(tempsSechageFloat);
+                    delay(1000);
+                    if(compteurSechage == tempsSechageFloat){
+                        sechage = false;
+                        compteurSechage = 0;
+                        digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+                        digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+                        digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
+                    }
+            }
+            if(temperature > temperatureSechageMax){
+                myOledViewWorkingCOLD->setParams("NomSysteme","SAC System");
+                myOledViewWorkingCOLD->setParams("IdSysteme", "SAC_911");
+                myOledViewWorkingCOLD->setParams("Temperature", temperatureString);
+                myOledViewWorkingCOLD->setParams("Ip", ip);
+                myOled->displayView(myOledViewWorkingCOLD);
+                digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
+                digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+                digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
+            }
+        }
+        else{
+            myOledViewWorkingOFF->setParams("NomSysteme","SAC System");
+            myOledViewWorkingOFF->setParams("IdSysteme", "SAC_911");
+            myOledViewWorkingOFF->setParams("Temperature", temperatureString);
+            myOledViewWorkingOFF->setParams("Ip", ip);
+            myOled->displayView(myOledViewWorkingOFF);
+            digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+            digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+            digitalWrite(GPIO_PIN_LED_OK_GREEN, HIGH);
+        }
     } //loop

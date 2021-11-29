@@ -11,6 +11,14 @@ void MyOledViewWorking::init(std::string _id) {
 
     Serial.println("Init dans MyOledViewWorking");
     setParams("id", _id);
+
+
+        Fire24x24Pointers[0] = const_cast<unsigned char *>(&Fire24x24_1[0]);
+        Fire24x24Pointers[1] = const_cast<unsigned char *>(&Fire24x24_2[0]);
+        Fire24x24Pointers[2] = const_cast<unsigned char *>(&Fire24x24_3[0]);
+        Fire24x24Pointers[3] = const_cast<unsigned char *>(&Fire24x24_4[0]);
+        Fire24x24Pointers[4] = const_cast<unsigned char *>(&Fire24x24_5[0]);
+        Fire24x24Pointers[5] = const_cast<unsigned char *>(&Fire24x24_6[0]);
     }
 
 
@@ -21,9 +29,8 @@ void MyOledViewWorking::init(std::string _id) {
  * 
  */
 void MyOledViewWorking::displayGifFire(Adafruit_SSD1306 *adafruit, int positionX, int positionY) {
-    adafruit->clearDisplay();
     adafruit->setTextSize(1);
-
+    adafruit->drawBitmap(positionX, positionY, Fire24x24Pointers[0], 24, 24, WHITE);
     }
 
 
@@ -34,10 +41,16 @@ void MyOledViewWorking::displayGifFire(Adafruit_SSD1306 *adafruit, int positionX
  * 
  */
 void MyOledViewWorking::displayGifFireAnimated(Adafruit_SSD1306 *adafruit, int positionX, int positionY) {
-    adafruit->clearDisplay();
+int secondes = atoi(getTag("secondes").c_str());
     adafruit->setTextSize(1);
-    
+    for (int index = 0; index <= secondes; index++) {
+        adafruit->drawBitmap(positionX, positionY, Fire24x24Pointers[(++indexFire) % 6], 24, 24, WHITE);
+
+        adafruit->display();
+        delay(1000);
     }
+    delay(indexFireDelay * 2);
+}
 
 
 void MyOledViewWorking::display(Adafruit_SSD1306 *adafruit){
@@ -52,7 +65,7 @@ void MyOledViewWorking::display(Adafruit_SSD1306 *adafruit){
     adafruit->print("Id : ");
     adafruit->print(getTag("IdSysteme").c_str());
 
-    adafruit->setCursor(40, 55);
+    adafruit->setCursor(40, 56);
     adafruit->println(getTag("Ip").c_str());
 }
 

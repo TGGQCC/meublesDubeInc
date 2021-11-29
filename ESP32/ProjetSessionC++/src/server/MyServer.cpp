@@ -31,6 +31,10 @@ void MyServer::initAllRoutes() {
         request->send(SPIFFS, "/index.html", "text/html");
         });
 
+    this->on("/main", HTTP_GET, [](AsyncWebServerRequest *request) {
+            request->send(SPIFFS, "/main.html", "text/html");
+            });
+
     //Route de la page du four
     this->on("/login", HTTP_POST, [](AsyncWebServerRequest *request) {
             Serial.println("login... ");
@@ -84,6 +88,7 @@ void MyServer::initAllRoutes() {
             HTTPClient http;
             String woodApiRestAddress = "http://172.16.200.254:3000/api/getAllWoods";
             http.begin(woodApiRestAddress);
+            http.setAuthorization(request->getHeader("Authorization")->value().c_str());
             http.GET();
             String response = http.getString();
             Serial.println(response);
@@ -100,6 +105,7 @@ void MyServer::initAllRoutes() {
                 Serial.println(request->getParam("id")->value());
                 String woodApiRestAddress = "http://172.16.200.254:3000/api/getCaracterisiticsOf/" + request->getParam("id")->value();
                 http.begin(woodApiRestAddress);
+                http.setAuthorization(request->getHeader("Authorization")->value().c_str());
                 http.GET();
                 response = http.getString();
             }else
@@ -112,12 +118,22 @@ void MyServer::initAllRoutes() {
 
         this->on("/postDemarrerFour", HTTP_POST, [](AsyncWebServerRequest *request) {
             Serial.println("Démarrage du four... ");
+            string tempsSechage;
+            string temperatureSechage;
 
+            if(request->hasParam("tempsSechage", true) && request->hasParam("temperatureSechage", true))
+            {
+                tempsSechage = request->getParam("tempsSechage", true)->value().c_str();
+                temperatureSechage = request->getParam("temperatureSechage", true)->value().c_str();
+                std::string repString = "";
+                if (ptrToCallBackFunction) repString = (*ptrToCallBackFunction)("demarrerFour " + tempsSechage + " " + temperatureSechage);
+            }
         });
 
         this->on("/postStopFour", HTTP_POST, [](AsyncWebServerRequest *request) {
             Serial.println("Stopper le four... ");
-
+            std::string repString = "";
+            if (ptrToCallBackFunction) repString = (*ptrToCallBackFunction)("stopFour"); 
         });
 
         this->on("/getTemperature", HTTP_GET, [](AsyncWebServerRequest *request) {

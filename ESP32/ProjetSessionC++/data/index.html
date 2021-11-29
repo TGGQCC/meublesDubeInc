@@ -46,7 +46,11 @@
             xhttp.open("POST", "login", true);
             xhttp.onreadystatechange = function (){
                 if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
+                    let json = JSON.parse(this.responseText);
+                    if(json["token"] != "123"){
+                        window.location = "main";
+                        window.localStorage.setItem("token", json["token"]);
+                    }
                 }
             }
             xhttp.send("user="+user+"&password="+password);

@@ -7,7 +7,7 @@
     <title>SAC</title>
 </head>
 
-<body onload="getFromESP_getAllWoodOptions(); getFromESP_getCaracterisiticsOf(1);">
+<body onload="getFromESP_getAllWoodOptions();">
     <div style="display: flex;">
         <div style="width: 40%;">
             <img src="sac.PNG" style="width: 60%; height: auto;"><br>
@@ -24,8 +24,8 @@
                 <label style="display: inline-block; margin-bottom: 3px; margin-top: 8px; width: 135px;">Bois</label><label><span style="display: inline-block;" id="nom"> </span></label><br>
                 <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Type</label><label><span style="display: inline-block;" id="type"> </span></label><br>
                 <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Origine</label><label><span style="display: inline-block;" id="origine"> </span></label><br>
-                <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Temps de séchage</label><label><span style="display: inline-block;;" id="sechage"> </span></label><br>
-                <label style="display: inline-block; margin-bottom: 8px; width: 135px;">Température min</label><label><span style="display: inline-block;" id="temp_min"> </span></label>
+                <label style="display: inline-block; margin-bottom: 3px; width: 135px;">Temps de séchage : </label><label><span style="display: inline-block;;" id="sechage"></span> Secondes</label><br>
+                <label style="display: inline-block; margin-bottom: 8px; width: 135px;">Température min : </label><label><span style="display: inline-block;" id="temp_min"></span> Celsius</label>
             </div>
         </div>
         
@@ -47,8 +47,8 @@
                         <div style="margin-right: 43px; margin-left: 25px;">
                             <p style="font-size: 15px;" id="boisFour"></p>
                         </div>
-                        <div style="margin-right: 20px; ">
-                            <p style="font-size: 15px;">0s</p>
+                        <div style="margin-right: 0px; ">
+                            <p id="compteurSechage" style="font-size: 15px;">0s</p>
                         </div>
                         <div style="margin-right: 20px;">
                             <p style="font-size: 15px;" id="sechageFour"></p>
@@ -56,11 +56,11 @@
                         <div style="margin-right: 20px;">
                             <p style="font-size: 15px;" id="temp_minFour"></p>
                         </div>
-                            <div style="margin-right: 4px; width:6px; height:6px; border-radius:50px; background: red; border: 1px solid black; margin-top: 21px;"></div>
+                            <div id="ledRouge" style="margin-right: 4px; width:6px; height:6px; border-radius:50px; background: white; border: 1px solid black; margin-top: 21px;"></div>
 
-                            <div style="margin-right: 4px; width:6px; height:6px; border-radius:50px; background: yellow; border: 1px solid black; margin-top: 21px;"></div>
+                            <div id="ledJaune" style="margin-right: 4px; width:6px; height:6px; border-radius:50px; background: white; border: 1px solid black; margin-top: 21px;"></div>
                         
-                            <div style="width:6px; height:6px; border-radius:50px; background: green; border: 1px solid black; margin-top: 21px;"></div>                     
+                            <div id="ledVerte" style="width:6px; height:6px; border-radius:50px; background: white; border: 1px solid black; margin-top: 21px;"></div>                     
                     </div>
                 </div>
                 
