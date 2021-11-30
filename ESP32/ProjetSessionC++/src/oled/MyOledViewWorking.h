@@ -17,10 +17,7 @@
     Autres librairies (à copier dans le répertoire lib)
         Aucune
     
-    Exemple d'utilisation 
-        //Définition 
 
-        //Utilisation
 
 **/
 
@@ -31,7 +28,10 @@
 #include <string>
 #include "MyOledView.h"
 
-
+//Feu animé
+// (Horizontal) byte array of bitmap :
+// NOTE: width NOT a multiple of 8 (required by some LCDs & printers)
+//http : //en.radzio.dxp.pl/bitmap_converter/
 const unsigned char Fire24x24_1[] PROGMEM = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x60, 0x00, 0x00, 0x70, 0x00, 0x00, 0x7c, 0x00, 0x00, 0x7f, 

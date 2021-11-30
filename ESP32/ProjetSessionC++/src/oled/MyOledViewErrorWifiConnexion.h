@@ -19,9 +19,11 @@
     
     Exemple d'utilisation 
         //Définition 
+            myOledViewErrorWifiConnexion = new MyOledViewErrorWifiConnexion;
 
         //Utilisation
-
+            myOledViewErrorWifiConnexion->setNomDuSysteme("SAC System");
+            myOled->displayView(myOledViewErrorWifiConnexion);
 **/
 
 

@@ -19,9 +19,15 @@
     
     Exemple d'utilisation 
         //Définition 
-
+        myOledViewWorkingCOLD = new MyOledViewWorkingCOLD;
+        myOledViewWorkingCOLD->init("SAC_911");
+        
         //Utilisation
-
+        myOledViewWorkingCOLD->setParams("NomSysteme","SAC System");
+        myOledViewWorkingCOLD->setParams("IdSysteme", "SAC_911");
+        myOledViewWorkingCOLD->setParams("Temperature", temperatureString);
+        myOledViewWorkingCOLD->setParams("Ip", ip);
+        myOled->displayView(myOledViewWorkingCOLD);
 **/
 
 #ifndef MYOLEDVIEWWORKINGCOLD_H

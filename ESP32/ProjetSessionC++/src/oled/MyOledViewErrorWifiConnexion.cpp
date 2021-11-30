@@ -1,8 +1,8 @@
 /**
     Gestion de la vue des erreurs de connexion au wifi de l'OLED 
     @file MyOledViewErrorWifiConnexion.cpp
-    @author Joséanne Aubut
-    @version 1.0 22/11/2021 
+    @author Jérémie Cyr
+    @version 1.0 2021/11/01
 */
 #include <Arduino.h>
 #include "MyOledViewErrorWifiConnexion.h"

@@ -1,6 +1,7 @@
-let compteurSechage = 0;
-let sechage = false;
+let compteurSechage = 0;    //Variable du compteur de temps de séchage
+let sechage = false;        //indique si le four est allumé (true) ou éteint (false)
 
+//Va chercher tout les bois 
 function getFromESP_getAllWoodOptions() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -29,6 +30,7 @@ function getFromESP_getAllWoodOptions() {
     xhttp.send();
 }
 
+//Va chercher les informations sur un bois
 function getFromESP_getCaracterisiticsOf(id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -59,7 +61,7 @@ function getFromESP_getCaracterisiticsOf(id) {
     xhttp.send();
 }
 
-
+    //Démarre le four
     function postToESP_demarrerFour(){
         document.getElementById("btnDemarrerFour").style.display = "none";
         document.getElementById("btnStopFour").style.display = "block";
@@ -73,6 +75,7 @@ function getFromESP_getCaracterisiticsOf(id) {
         sechage = true;
         }
 
+    //Éteint le four
     function postToESP_stopFour(){
             document.getElementById("btnDemarrerFour").style.display = "block";
             document.getElementById("btnStopFour").style.display = "none";
@@ -89,7 +92,7 @@ function getFromESP_getCaracterisiticsOf(id) {
         }
 
 
-    
+    //Va chercher la température et contient la logique du compteur de la page (s'éxécute chaque seconde)
     (setInterval(function(){
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {

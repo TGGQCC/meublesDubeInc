@@ -9,12 +9,12 @@
  *  
     @file     main.cpp
     @author   Jérémie Cyr
-    @version  1.1 2021-11-01
+    @version  4.0 2021-11-30
 
     Historique des versions
            Version    Date        Auteur         Description
            1.0        2021-11-01  Jérémie Cyr    Première version fonctionnelle
-
+           4.0        2021-11-30  Jérémie Cyr    Version Finale Fonctionnelle
     platform = espressif32
     board = esp32doit-devkit-v1
     framework = arduino
@@ -37,7 +37,8 @@
 Classes du système
     MyServer                            V1.0    Gestion des routes de l'interface WEB
             /data                               Répertoire qui contient les fichiers du site WEB 
-                index.html              V1.0    Page index de l'interface
+                index.html              V1.0    Page index de l'interface pour s'authentifier
+                main.html               V1.0    Page principale de l'interface pour gérer le four
                 global.css              V1.0    CSS
                 script.js               V1.0    JS 
                 sac.PNG                         Image fournie par le client
@@ -59,7 +60,7 @@ Classes du système
 using namespace std;
 
 #include <iostream>
-#include <sstream>    // header file for stringstream
+#include <sstream>    
 #include <string>
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -125,12 +126,12 @@ String ssIDRandom;
 MyButton *myButtonAction = NULL;
 MyButton *myButtonReset = NULL;
 
-//Variable de température
-float temperature = NULL; 
-bool sechage = false;
-string temperatureSechage;
-string tempsSechage;
-int compteurSechage = 0;
+//Variables de température
+float temperature = NULL;       //Température 
+bool sechage = false;           //Indique si le four est allumé (true) ou éteint (false)
+string temperatureSechage;      //Température requise pour le séchage
+string tempsSechage;            //Temps requis pour le séchage
+int compteurSechage = 0;        //Compteur qui compte depuis combien de temps le four chauffe le bois
 
 //fonction statique qui permet aux objets d'envoyer des messages (callBack) 
 //  arg0 : Action 
@@ -142,13 +143,16 @@ std::string CallBackMessageListener(string message) {
     string arg1 = getValue(message, ' ', 1);
     string arg2 = getValue(message, ' ', 2);
 
+    //Traduit la température en string
     stringstream stream;
     stream << temperature;
     string strTemperature;
     stream >> strTemperature;
 
+    //Retourne la température vers MyServer
     if (string(actionToDo.c_str()).compare(string("askTemperature")) == 0) {  return(strTemperature.c_str()); }
     
+    //Démarre la logique du four
     if (string(actionToDo.c_str()).compare(string("demarrerFour")) == 0) { 
         sechage = true;         
         tempsSechage = arg1;
@@ -156,12 +160,12 @@ std::string CallBackMessageListener(string message) {
         Serial.println(tempsSechage.c_str());
         Serial.println(temperatureSechage.c_str());
         }
-        
+
+    //Arrête la logique du four  
     if (string(actionToDo.c_str()).compare(string("stopFour")) == 0) { sechage = false; compteurSechage = 0;}
 
     return "";
 }
-
 
 
 
@@ -174,6 +178,7 @@ void setup() {
     Serial.begin(9600);
     delay(100);
 
+    //Démarre la vue d'initialisation
     myOledViewInitialisation = new MyOledViewInitialisation;
     myOled->init(OLED_I2C_ADDRESS);
     myOled->veilleDelay(60); //En secondes
@@ -191,17 +196,18 @@ void setup() {
     Serial.print("sensibilisationButtonAction : "); Serial.println(sensibilisationButtonAction);
     Serial.print("sensibilisationButtonReset : "); Serial.println(sensibilisationButtonReset);
     
+    //Traduit la sensibilité en string
     stringstream streamSensibilite;
     streamSensibilite << sensibilisationButtonAction;
     string sensibilite;
     streamSensibilite >> sensibilite;
 
+    //Initialise les boutons
     myOledViewInitialisation->setSensibiliteBoutonAction(sensibilite);
     streamSensibilite << sensibilisationButtonReset;
     streamSensibilite >> sensibilite;
     myOledViewInitialisation->setSensibiliteBoutonReset(sensibilite);
     myOled->updateCurrentView(myOledViewInitialisation);
-
 
 
     //Initiation pour la lecture de la température
@@ -213,7 +219,6 @@ void setup() {
     pinMode(GPIO_PIN_LED_HEAT_YELLOW, OUTPUT);
     pinMode(GPIO_PIN_LED_OK_GREEN, OUTPUT);
 
-    
 
     //Connection au WifiManager
         String ssIDRandom, PASSRandom;
@@ -230,7 +235,7 @@ void setup() {
         sprintf(strToPrint, "Identification : %s   MotDePasse: %s", ssIDRandom, PASSRandom);
         Serial.println(strToPrint);
 
-
+        //Démarre la vue WifiAp
          myOledViewWifiAp = new MyOledViewWifiAp;
          myOledViewWifiAp->setNomDuSysteme("SAC System");
          myOledViewWifiAp->setParams("IdSysteme", "SAC_911");
@@ -239,6 +244,7 @@ void setup() {
          myOled->displayView(myOledViewWifiAp);
 
 
+    //Vérifie si le système est connecté au réseau
     if (!wm.autoConnect(ssIDRandom.c_str(), PASSRandom.c_str())){
             Serial.println("Erreur de connexion.");
             myOledViewErrorWifiConnexion = new MyOledViewErrorWifiConnexion;
@@ -266,7 +272,6 @@ void setup() {
 
             }
 
-            ip = WiFi.localIP().toString().c_str();
 
         // ----------- Routes du serveur ----------------
         myServer = new MyServer(80);
@@ -279,12 +284,13 @@ void setup() {
         myOledViewWorkingHEAT = new MyOledViewWorkingHEAT;
         myOledViewWorkingOFF = new MyOledViewWorkingOFF;
 
+        ip = WiFi.localIP().toString().c_str(); //Récupère l'adresse ip du système
 
   } //setup
 
 
 void loop() {
-        myOled->veilleCheck(false); //Active la mise en veille
+        myOled->veilleCheck(false); //Active la mise en veille du système
         
         int buttonAction = myButtonAction->checkMyButton(); //Bouton qui sors de la veille
         int buttonReset = myButtonReset->checkMyButton(); //Bouton qui redémarre l'ESP
@@ -319,6 +325,7 @@ void loop() {
         if(sechage)
         {
             if(temperature < temperatureSechageMin){
+                //Démarre la vue WorkingCOLD et allume la led associée
                 myOledViewWorkingCOLD->setParams("NomSysteme","SAC System");
                 myOledViewWorkingCOLD->setParams("IdSysteme", "SAC_911");
                 myOledViewWorkingCOLD->setParams("Temperature", temperatureString);
@@ -329,6 +336,7 @@ void loop() {
                 digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
             }
             while(temperature >= temperatureSechageMin && temperature <= temperatureSechageMax && compteurSechage <= tempsSechageFloat && sechage){
+                    //Démarre la vue WorkingHEAT et allume la led associée
                     myOledViewWorkingHEAT->setParams("NomSysteme","SAC System");
                     myOledViewWorkingHEAT->setParams("IdSysteme", "SAC_911");
                     myOledViewWorkingHEAT->setParams("Temperature", temperatureString);
@@ -342,14 +350,16 @@ void loop() {
                     Serial.println(tempsSechageFloat);
                     delay(1000);
                     if(compteurSechage == tempsSechageFloat){
-                        sechage = false;
-                        compteurSechage = 0;
+                        sechage = false; //Indique que le four est éteint
+                        compteurSechage = 0; //Remet le compteur a 0
+                        //Éteint les leds
                         digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
                         digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
                         digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
                     }
             }
             if(temperature > temperatureSechageMax){
+                //Démarre la vue WorkingCOLD et allume la led associée
                 myOledViewWorkingCOLD->setParams("NomSysteme","SAC System");
                 myOledViewWorkingCOLD->setParams("IdSysteme", "SAC_911");
                 myOledViewWorkingCOLD->setParams("Temperature", temperatureString);
@@ -361,6 +371,7 @@ void loop() {
             }
         }
         else{
+            //Démarre la vue WorkingOFF et allume la led associée
             myOledViewWorkingOFF->setParams("NomSysteme","SAC System");
             myOledViewWorkingOFF->setParams("IdSysteme", "SAC_911");
             myOledViewWorkingOFF->setParams("Temperature", temperatureString);

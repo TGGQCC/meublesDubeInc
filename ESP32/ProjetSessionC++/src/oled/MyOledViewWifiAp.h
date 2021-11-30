@@ -19,9 +19,14 @@
     
     Exemple d'utilisation 
         //Définition 
+         myOledViewWifiAp = new MyOledViewWifiAp;
 
         //Utilisation
-
+         myOledViewWifiAp->setNomDuSysteme("SAC System");
+         myOledViewWifiAp->setParams("IdSysteme", "SAC_911");
+         myOledViewWifiAp->setSsIDDuSysteme(ssIDRandom.c_str());
+         myOledViewWifiAp->setPassDuSysteme(PASSRandom.c_str());
+         myOled->displayView(myOledViewWifiAp);
 **/
 
 

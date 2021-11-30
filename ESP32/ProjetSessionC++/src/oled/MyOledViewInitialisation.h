@@ -19,9 +19,12 @@
     
     Exemple d'utilisation 
         //Définition 
+        myOledViewInitialisation = new MyOledViewInitialisation;
 
         //Utilisation
-
+        myOledViewInitialisation->setNomDuSysteme("SAC System");
+        myOledViewInitialisation->setIdDuSysteme("SAC_911");
+        myOled->displayView(myOledViewInitialisation);
 **/
 
 

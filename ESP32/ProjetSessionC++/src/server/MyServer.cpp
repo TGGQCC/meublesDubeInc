@@ -3,6 +3,9 @@
     @file MyServer.cpp
     @author Alain Dubé
     @version 1.1 20/11/20 
+
+    Modifications :
+                    2021-11-01  Jérémie Cyr Ajout de routes
 */
 #include <Arduino.h>
 #include "MyServer.h"
@@ -45,7 +48,7 @@ void MyServer::initAllRoutes() {
 
            if(request->hasParam("user", true) && request->hasParam("password", true))
             {
-                String woodApiRestAddress = "http://172.16.200.254:3000/api/login";
+                String woodApiRestAddress = "http://172.16.200.254:3000/api/login";     //API
                 http.begin(woodApiRestAddress);
                 String response = http.getString();
                 user = request->getParam("user", true)->value();
@@ -74,19 +77,22 @@ void MyServer::initAllRoutes() {
         request->send(SPIFFS, "/script.js", "text/javascript");
         });
 
+    //Route du CSS
     this->on("/index.css", HTTP_GET, [](AsyncWebServerRequest *request) {
-        request->send(SPIFFS, "/globaln.css", "text/css");
+        request->send(SPIFFS, "/global.css", "text/css");
         });
-   
+    
+    //Route de la page 404
     this->onNotFound([](AsyncWebServerRequest *request){
         request->send(404, "text/plain", "Page Not Found");
         });
     
+    //Route pour obtenir tout les bois
     this->on("/getAllWoodOptions", HTTP_GET, [](AsyncWebServerRequest *request) {
             Serial.println("getAllWoodOptions... ");
 
             HTTPClient http;
-            String woodApiRestAddress = "http://172.16.200.254:3000/api/getAllWoods";
+            String woodApiRestAddress = "http://172.16.200.254:3000/api/getAllWoods";       //API
             http.begin(woodApiRestAddress);
             http.setAuthorization(request->getHeader("Authorization")->value().c_str());
             http.GET();
@@ -95,6 +101,7 @@ void MyServer::initAllRoutes() {
             request->send(200, "text/plain", response);
         });
 
+        //Route pour obtenir les informations d'un bois
         this->on("/getCaracteristicsOf", HTTP_GET, [](AsyncWebServerRequest *request) {
             Serial.println("getCaracteristicsOf... ");
             String response;
@@ -103,7 +110,7 @@ void MyServer::initAllRoutes() {
             if(request->hasParam("id"))
             {
                 Serial.println(request->getParam("id")->value());
-                String woodApiRestAddress = "http://172.16.200.254:3000/api/getCaracterisiticsOf/" + request->getParam("id")->value();
+                String woodApiRestAddress = "http://172.16.200.254:3000/api/getCaracterisiticsOf/" + request->getParam("id")->value();      //API
                 http.begin(woodApiRestAddress);
                 http.setAuthorization(request->getHeader("Authorization")->value().c_str());
                 http.GET();
@@ -116,6 +123,7 @@ void MyServer::initAllRoutes() {
             request->send(200, "text/plain", response);
         });
 
+        //Route pour démarrer le four
         this->on("/postDemarrerFour", HTTP_POST, [](AsyncWebServerRequest *request) {
             Serial.println("Démarrage du four... ");
             string tempsSechage;
@@ -130,12 +138,14 @@ void MyServer::initAllRoutes() {
             }
         });
 
+        //Route pour arrêter le four
         this->on("/postStopFour", HTTP_POST, [](AsyncWebServerRequest *request) {
             Serial.println("Stopper le four... ");
             std::string repString = "";
             if (ptrToCallBackFunction) repString = (*ptrToCallBackFunction)("stopFour"); 
         });
 
+        //Route pour obtenir la température actuelle du four
         this->on("/getTemperature", HTTP_GET, [](AsyncWebServerRequest *request) {
             Serial.println("getTemperature... ");
             std::string repString = "";

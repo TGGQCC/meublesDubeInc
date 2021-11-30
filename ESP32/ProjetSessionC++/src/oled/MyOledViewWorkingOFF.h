@@ -19,9 +19,14 @@
     
     Exemple d'utilisation 
         //Définition 
+        myOledViewWorkingOFF = new MyOledViewWorkingOFF;
 
         //Utilisation
-
+        myOledViewWorkingOFF->setParams("NomSysteme","SAC System");
+        myOledViewWorkingOFF->setParams("IdSysteme", "SAC_911");
+        myOledViewWorkingOFF->setParams("Temperature", temperatureString);
+        myOledViewWorkingOFF->setParams("Ip", ip);
+        myOled->displayView(myOledViewWorkingOFF);
 **/
 
 
