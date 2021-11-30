@@ -181,7 +181,7 @@ void setup() {
     //Démarre la vue d'initialisation
     myOledViewInitialisation = new MyOledViewInitialisation;
     myOled->init(OLED_I2C_ADDRESS);
-    myOled->veilleDelay(60); //En secondes
+    myOled->veilleDelay(120); //En secondes
     myOledViewInitialisation->setNomDuSysteme("SAC System");
     myOledViewInitialisation->setIdDuSysteme("SAC_911");
     myOled->displayView(myOledViewInitialisation);
@@ -208,6 +208,7 @@ void setup() {
     streamSensibilite >> sensibilite;
     myOledViewInitialisation->setSensibiliteBoutonReset(sensibilite);
     myOled->updateCurrentView(myOledViewInitialisation);
+    delay(2000);
 
 
     //Initiation pour la lecture de la température
@@ -253,7 +254,7 @@ void setup() {
 
             }
         else {
-                Serial.println("Connexion Établie.");      
+                Serial.println("Connexion Établie.");    
                     digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, HIGH);
                     digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, HIGH);
                     digitalWrite(GPIO_PIN_LED_OK_GREEN, HIGH);
@@ -318,6 +319,9 @@ void loop() {
         //Redémarrer le système
         if(buttonReset > 2){
             Serial.println("Restarting...");
+            digitalWrite(GPIO_PIN_LED_LOCK_ROUGE, LOW);
+            digitalWrite(GPIO_PIN_LED_HEAT_YELLOW, LOW);
+            digitalWrite(GPIO_PIN_LED_OK_GREEN, LOW);
             ESP.restart();
         }
 

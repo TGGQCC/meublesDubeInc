@@ -18,7 +18,8 @@ void MyOledViewErrorWifiConnexion::display(Adafruit_SSD1306 *adafruit){
     adafruit->setCursor(0, 0);
     adafruit->println(nomDuSysteme.c_str());
     adafruit->setTextSize(1);
-    adafruit->println("Erreur de connexion au Wifi");
+    adafruit->println("Erreur de connexion");
+    adafruit->println("au Wifi");
     adafruit->display();
 }
 
@@ -28,6 +29,7 @@ void MyOledViewErrorWifiConnexion::update(Adafruit_SSD1306 *adafruit){
     adafruit->setCursor(0, 0);
     adafruit->println(nomDuSysteme.c_str());
     adafruit->setTextSize(1);
-    adafruit->println("Erreur de connexion au Wifi");
+    adafruit->println("Erreur de connexion");
+    adafruit->println("au Wifi");
     adafruit->display();
 }

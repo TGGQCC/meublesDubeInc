@@ -10,7 +10,6 @@ using namespace std;
 
 void MyOledViewWorkingHEAT::display(Adafruit_SSD1306 *adafruit){
     MyOledViewWorking::display(adafruit);
-    MyOledViewWorking::displayGifFire(adafruit, 80,31);
     adafruit->setCursor(85, 24);
     adafruit->println("Heating");
     adafruit->setCursor(10, adafruit->getCursorY() + 3);
